@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>جهاز مكافحة الابتزاز | A.E.A</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap');
+
+        :root {
+            --gold: #d4af37;
+            --dark-bg: #0a0a0a;
+            --card-bg: rgba(25, 25, 25, 0.9);
+            --text-gray: #b0b0b0;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--dark-bg);
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* هيدر عصري */
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 5%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2); position: sticky; top: 0; z-index: 1000;
+        }
+
+        .menu-btn { cursor: pointer; display: flex; flex-direction: column; gap: 6px; }
+        .menu-btn span { width: 28px; height: 3px; background: var(--gold); border-radius: 10px; transition: 0.3s; }
+        .menu-btn.open span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+        .menu-btn.open span:nth-child(2) { opacity: 0; }
+        .menu-btn.open span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+
+        .brand h1 { margin: 0; font-size: 1.1rem; font-weight: 900; }
+        .brand span { color: var(--gold); font-size: 0.75rem; font-weight: bold; letter-spacing: 2px; }
+        .logo img { height: 45px; border-radius: 8px; }
+
+        /* القائمة الجانبية */
+        .side-nav {
+            position: fixed; top: 0; right: -100%; width: 100%; max-width: 300px; height: 100vh;
+            background: rgba(10, 10, 10, 0.98); z-index: 2000; transition: 0.5s ease;
+            padding: 100px 30px; border-left: 1px solid rgba(212, 175, 55, 0.1);
+        }
+        .side-nav.active { right: 0; }
+        .side-nav ul { list-style: none; padding: 0; }
+        .side-nav li { margin-bottom: 25px; }
+        .side-nav a { color: #fff; text-decoration: none; font-size: 1.2rem; font-weight: 600; display: block; cursor: pointer; }
+
+        /* الأقسام */
+        .container { width: 92%; max-width: 600px; margin: 0 auto; }
+        .section { display: none; padding: 40px 0; min-height: 85vh; flex-direction: column; align-items: center; text-align: center; }
+        .section.active { display: flex; animation: slideUp 0.5s ease; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .glass-card { background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; padding: 30px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.4); margin-bottom: 20px; }
+
+        /* أزرار وعناصر */
+        .btn-main { width: 100%; padding: 16px; border-radius: 12px; border: none; background: var(--gold); color: #000; font-weight: 900; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-main:hover { opacity: 0.9; transform: scale(0.98); }
+        .manual-input, textarea { width: 100%; padding: 15px; border-radius: 12px; background: #000; border: 1px solid #333; color: #fff; font-family: 'Cairo'; margin-bottom: 15px; }
+
+        /* تبويبات */
+        .tabs { display: flex; background: #111; padding: 5px; border-radius: 12px; margin-bottom: 20px; width: 100%; }
+        .tab { flex: 1; padding: 10px; border-radius: 10px; border: none; background: none; color: #888; cursor: pointer; font-family: 'Cairo'; font-weight: bold; }
+        .tab.active { background: var(--gold); color: #000; }
+
+        /* الإبلاغ */
+        .prov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; margin-top: 20px; }
+        .btn-prov { padding: 20px; border-radius: 15px; border: 1px solid #222; background: #111; color: #555; font-weight: bold; cursor: not-allowed; transition: 0.3s; }
+        .btn-prov.active { border-color: var(--gold); color: #fff; background: rgba(212, 175, 55, 0.05); cursor: pointer; }
+
+        /* التحقق */
+        #reader { width: 100%; border-radius: 20px; overflow: hidden; display: none; border: 2px solid var(--gold); margin-bottom: 20px; }
+        .member-result { display: none; margin-top: 20px; padding: 25px; border-radius: 20px; background: #050505; border: 1px solid var(--gold); width: 100%; }
+        .member-img { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--gold); object-fit: cover; margin-bottom: 15px; background: #111; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 50px; background: #00ff00; color: #000; font-size: 0.75rem; font-weight: bold; }
+        .rank { color: var(--gold); font-weight: 800; font-size: 1rem; margin-top: 10px; display: block; }
+
+        /* ميزات من نحن */
+        .feature-item { display: flex; align-items: center; gap: 15px; text-align: right; margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 15px; }
+        .feature-icon { color: var(--gold); font-size: 1.5rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="menu-btn" onclick="toggleNav()"><span></span><span></span><span></span></div>
+        <div class="brand"><h1>جهاز مكافحة الابتزاز</h1><span>A.E.A</span></div>
+        <div class="logo"><img src="./20260114_185546.jpg" alt="Logo"></div>
+    </header>
+
+    <nav class="side-nav" id="sideNav">
+        <ul>
+            <li><a onclick="showPage('home')">الرئيسية</a></li>
+            <li><a onclick="showPage('report')">إبلاغ عن حالة</a></li>
+            <li><a onclick="showPage('check')">تأكد من عضو</a></li>
+            <li><a onclick="showPage('join')">الانضمام للفريق</a></li>
+            <li><a onclick="showPage('about')">من نحن</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        
+        <section id="home" class="section active">
+            <h2 style="font-size: 2.2rem; margin-bottom: 10px;">أمانكم <span style="color:var(--gold)">غايتنا</span></h2>
+            <p style="color:var(--text-gray);">نظام حماية متطور يعمل على مدار الساعة لحماية خصوصيتكم من الابتزاز الإلكتروني.</p>
+            <button class="btn-main" style="margin-top:20px;" onclick="showPage('report')">إرسال بلاغ فوري</button>
+        </section>
+
+        <section id="report" class="section">
+            <div id="step1" style="width:100%">
+                <h3 style="color:var(--gold)">اختر المحافظة</h3>
+                <div class="prov-grid">
+                    <div class="btn-prov active" onclick="goStep2('المثنى')">المثنى</div>
+                    <div class="btn-prov">بغداد</div>
+                    <div class="btn-prov">البصرة</div>
+                    <div class="btn-prov">ذي قار</div>
+                </div>
+            </div>
+            <div id="step2" class="glass-card" style="display:none">
+                <h4 id="cityTitle" style="color:var(--gold); margin:0 0 15px 0"></h4>
+                <textarea id="msgBody" placeholder="اشرح الحالة بالتفصيل..."></textarea>
+                <input type="file" id="evidence" style="margin-bottom:15px; font-size:0.8rem; color:#fff;">
+                <button class="btn-main" id="sendBtn" onclick="submitReport()">تأكيد الإرسال</button>
+            </div>
+        </section>
+
+        <section id="check" class="section">
+            <div class="glass-card">
+                <h3 style="color:var(--gold); margin-bottom:20px;">التحقق من الهوية</h3>
+                <div class="tabs">
+                    <button id="t1" class="tab active" onclick="setMode('ID')">رقم الـ ID</button>
+                    <button id="t2" class="tab" onclick="setMode('QR')">ماسح الـ QR</button>
+                </div>
+                <div id="manualInp">
+                    <input type="text" id="idVal" class="manual-input" placeholder="أدخل رقم التعريف">
+                    <button class="btn-main" onclick="doVerify(document.getElementById('idVal').value)">تحقق</button>
+                </div>
+                <div id="reader"></div>
+                <div id="result" class="member-result">
+                    <img id="mPhoto" src="" class="member-img" onerror="this.src='https://via.placeholder.com/150'">
+                    <div class="badge">عضو معتمد ✅</div>
+                    <h3 id="mName" style="margin:10px 0; color:#fff"></h3>
+                    <p id="mAge" style="margin:0; color:var(--text-gray)"></p>
+                    <span id="mRank" class="rank"></span>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="section">
+            <div class="glass-card">
+                <img src="./20260114_185546.jpg" style="width:90px; border-radius:15px; border:1px solid var(--gold); margin-bottom:15px;">
+                <h2 style="color:var(--gold); margin-bottom:10px;">عن الجهاز</h2>
+                <p style="color:var(--text-gray); font-size:0.95rem; margin-bottom:25px;">
+                    جهاز مكافحة الابتزاز الإلكتروني (A.E.A) هو كيان تطوعي تقني يهدف إلى توفير بيئة رقمية آمنة للمواطنين في العراق.
+                </p>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">🛡️</div>
+                    <div>
+                        <strong style="color:var(--gold)">حماية الخصوصية</strong>
+                        <p style="margin:0; font-size:0.85rem; color:var(--text-gray)">نتعامل مع كافة البلاغات بسرية تامة وتشفير كامل.</p>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">⚖️</div>
+                    <div>
+                        <strong style="color:var(--gold)">الملاحقة التقنية</strong>
+                        <p style="margin:0; font-size:0.85rem; color:var(--text-gray)">استخدام أحدث الأدوات لتعقب المبتزين وجمع الأدلة.</p>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">🤝</div>
+                    <div>
+                        <strong style="color:var(--gold)">دعم الضحايا</strong>
+                        <p style="margin:0; font-size:0.85rem; color:var(--text-gray)">تقديم استشارات قانونية وتقنية لاستعادة الحسابات المخترقة.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="join" class="section">
+            <div class="glass-card">
+                <div style="font-size:3rem; margin-bottom:10px;">🦅</div>
+                <h2 style="color:var(--gold); margin-bottom:15px;">طلب انضمام للفريق</h2>
+                <p style="color:var(--text-gray); margin-bottom:25px;">هل تمتلك مهارات تقنية أو رغبة في العمل الميداني لحماية المجتمع؟</p>
+                
+                <div style="text-align:right; margin-bottom:20px;">
+                    <h4 style="color:var(--gold); margin-bottom:10px;">التخصصات المطلوبة:</h4>
+                    <ul style="color:var(--text-gray); font-size:0.9rem; padding-right:20px;">
+                        <li>الأمن السيبراني واختبار الاختراق.</li>
+                        <li>التحقيق الميداني وجمع المعلومات.</li>
+                        <li>الدعم النفسي والقانوني للضحايا.</li>
+                    </ul>
+                </div>
+
+                <div style="background:rgba(212,175,55,0.1); padding:15px; border-radius:15px; border:1px dashed var(--gold);">
+                    <p style="margin:0; font-size:0.9rem; color:#fff;">
+                        تنويه: باب التقديم الإلكتروني مغلق حالياً. سيتم فتح الاستمارة الرسمية في التحديث القادم.
+                    </p>
+                </div>
+                
+                <button class="btn-main" disabled style="background:#333; color:#777; cursor:not-allowed; margin-top:20px;">الاستمارة مغلقة مؤقتاً</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const BOT_TOKEN = "8524823700:AAFm1lw4nez_q5MR0U8ZMEKuihNvNf9rg3Q";
+        const CHAT_ID = "5922299310";
+        
+        const DATABASE = { 
+            "00001": { n: "حسين فاضل حسين", a: 21, p: "hussain.png", r: "مؤسس جهاز مكافحة الابتزاز" },
+            "00002": { n: "حسين حميد عفات", a: 19, p: "unknown.png", r: "قائد جهاز مكافحة الابتزاز" }
+        };
+        
+        let scanner;
+
+        function toggleNav() {
+            document.getElementById('sideNav').classList.toggle('active');
+            document.querySelector('.menu-btn').classList.toggle('open');
+        }
+
+        function showPage(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id !== 'check') stopScanner();
+            document.getElementById('sideNav').classList.remove('active');
+            document.querySelector('.menu-btn').classList.remove('open');
+            window.scrollTo(0,0);
+        }
+
+        function goStep2(city) {
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+            document.getElementById('cityTitle').innerText = "بلاغ محافظة " + city;
+        }
+
+        async function submitReport() {
+            const body = document.getElementById('msgBody').value;
+            const file = document.getElementById('evidence').files[0];
+            const btn = document.getElementById('sendBtn');
+            if(!body) return alert("يرجى كتابة التفاصيل");
+            btn.disabled = true; btn.innerText = "جاري الإرسال...";
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({chat_id: CHAT_ID, text: "🚨 بلاغ جديد:\n" + body})
+                });
+                if(file) {
+                    const fd = new FormData(); fd.append('chat_id', CHAT_ID); fd.append('photo', file);
+                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {method: 'POST', body: fd});
+                }
+                alert("تم الإرسال بنجاح");
+                showPage('home');
+            } catch(e) { alert("خطأ في الإرسال"); }
+            finally { btn.disabled = false; btn.innerText = "تأكيد الإرسال"; }
+        }
+
+        function setMode(m) {
+            document.getElementById('t1').classList.toggle('active', m==='ID');
+            document.getElementById('t2').classList.toggle('active', m==='QR');
+            document.getElementById('manualInp').style.display = m==='ID'?'block':'none';
+            document.getElementById('reader').style.display = m==='QR'?'block':'none';
+            document.getElementById('result').style.display = 'none';
+            m==='QR' ? startScanner() : stopScanner();
+        }
+
+        function doVerify(id) {
+            const res = document.getElementById('result');
+            if(DATABASE[id]) {
+                document.getElementById('mName').innerText = DATABASE[id].n;
+                document.getElementById('mAge').innerText = "العمر: " + DATABASE[id].a + " عاماً";
+                document.getElementById('mRank').innerText = DATABASE[id].r;
+                document.getElementById('mPhoto').src = DATABASE[id].p;
+                res.style.display = 'block';
+                stopScanner();
+            } else { alert("المعرف غير موجود"); res.style.display = 'none'; }
+        }
+
+        function startScanner() {
+            scanner = new Html5Qrcode("reader");
+            scanner.start({facingMode: "environment"}, {fps:10, qrbox:250}, (txt) => doVerify(txt));
+        }
+        function stopScanner() { if(scanner && scanner.isScanning) scanner.stop(); }
+    </script>
+</body>
+</html>
