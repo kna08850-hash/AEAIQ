@@ -88,6 +88,10 @@
         /* ميزات من نحن */
         .feature-item { display: flex; align-items: center; gap: 15px; text-align: right; margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 15px; }
         .feature-icon { color: var(--gold); font-size: 1.5rem; }
+
+        /* تنسيق الصفحة السرية */
+        .admin-card { border: 2px solid var(--gold); position: relative; overflow: hidden; }
+        .admin-card::before { content: "TOP SECRET"; position: absolute; top: 10px; left: -30px; background: red; color: white; padding: 5px 40px; transform: rotate(-45deg); font-size: 0.7rem; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -163,7 +167,6 @@
                 <p style="color:var(--text-gray); font-size:0.95rem; margin-bottom:25px;">
                     جهاز مكافحة الابتزاز الإلكتروني (A.E.A) هو كيان تطوعي تقني يهدف إلى توفير بيئة رقمية آمنة للمواطنين في العراق.
                 </p>
-                
                 <div class="feature-item">
                     <div class="feature-icon">🛡️</div>
                     <div>
@@ -171,22 +174,28 @@
                         <p style="margin:0; font-size:0.85rem; color:var(--text-gray)">نتعامل مع كافة البلاغات بسرية تامة وتشفير كامل.</p>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <div class="feature-item">
-                    <div class="feature-icon">⚖️</div>
-                    <div>
-                        <strong style="color:var(--gold)">الملاحقة التقنية</strong>
-                        <p style="margin:0; font-size:0.85rem; color:var(--text-gray)">استخدام أحدث الأدوات لتعقب المبتزين وجمع الأدلة.</p>
-                    </div>
+        <section id="admin-hidden" class="section">
+            <div class="glass-card admin-card">
+                <img src="./20260114_185546.jpg" class="member-img" style="width:150px; height:150px; border-width:4px;">
+                <div class="badge" style="background:var(--gold);">المسؤول الأعلى 👑</div>
+                <h2 id="adminName" style="margin:15px 0 5px 0; color:#fff; font-size:1.8rem;">حسين فاضل حسين</h2>
+                <p style="color:var(--gold); font-weight:bold; margin-bottom:5px;">مؤسس جهاز مكافحة الابتزاز</p>
+                <p style="color:var(--text-gray); font-size:0.9rem; margin-bottom:15px;">Anti-Extortion Agency</p>
+                
+                <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; margin-bottom:20px;">
+                    <span style="color:var(--text-gray)">العمر:</span> <span style="font-weight:bold;">21 عاماً</span>
                 </div>
 
-                <div class="feature-item">
-                    <div class="feature-icon">🤝</div>
-                    <div>
-                        <strong style="color:var(--gold)">دعم الضحايا</strong>
-                        <p style="margin:0; font-size:0.85rem; color:var(--text-gray)">تقديم استشارات قانونية وتقنية لاستعادة الحسابات المخترقة.</p>
-                    </div>
+                <div style="border-top:1px solid rgba(212,175,55,0.3); padding-top:15px;">
+                    <p style="font-size:0.75rem; color:var(--danger); background:rgba(255,0,0,0.1); padding:8px; border-radius:8px;">
+                        ⚠️ هذه الصفحة سرية لا يمكن الوصول إليها إلا عن طريق البطاقة الشخصية
+                    </p>
                 </div>
+                
+                <button class="btn-main" onclick="showPage('home')" style="margin-top:20px; background:#222; color:var(--gold); border:1px solid var(--gold);">إغلاق الملف</button>
             </div>
         </section>
 
@@ -194,23 +203,9 @@
             <div class="glass-card">
                 <div style="font-size:3rem; margin-bottom:10px;">🦅</div>
                 <h2 style="color:var(--gold); margin-bottom:15px;">طلب انضمام للفريق</h2>
-                <p style="color:var(--text-gray); margin-bottom:25px;">هل تمتلك مهارات تقنية أو رغبة في العمل الميداني لحماية المجتمع؟</p>
-                
-                <div style="text-align:right; margin-bottom:20px;">
-                    <h4 style="color:var(--gold); margin-bottom:10px;">التخصصات المطلوبة:</h4>
-                    <ul style="color:var(--text-gray); font-size:0.9rem; padding-right:20px;">
-                        <li>الأمن السيبراني واختبار الاختراق.</li>
-                        <li>التحقيق الميداني وجمع المعلومات.</li>
-                        <li>الدعم النفسي والقانوني للضحايا.</li>
-                    </ul>
-                </div>
-
                 <div style="background:rgba(212,175,55,0.1); padding:15px; border-radius:15px; border:1px dashed var(--gold);">
-                    <p style="margin:0; font-size:0.9rem; color:#fff;">
-                        تنويه: باب التقديم الإلكتروني مغلق حالياً. سيتم فتح الاستمارة الرسمية في التحديث القادم.
-                    </p>
+                    <p style="margin:0; font-size:0.9rem; color:#fff;">تنويه: باب التقديم الإلكتروني مغلق حالياً.</p>
                 </div>
-                
                 <button class="btn-main" disabled style="background:#333; color:#777; cursor:not-allowed; margin-top:20px;">الاستمارة مغلقة مؤقتاً</button>
             </div>
         </section>
@@ -280,6 +275,19 @@
 
         function doVerify(id) {
             const res = document.getElementById('result');
+            
+            // تحقق من الكود السري للوصول للصفحة السرية
+            if(id === "ADMIN_SECURE_ACCESS") {
+               const pass = prompt("النظام يتطلب مصادقة المسؤول:");
+               if(pass === "1999") { // كلمة المرور المحدثة
+                   showPage('admin-hidden');
+                   return;
+               } else {
+                   alert("خطأ: تصريح الدخول مرفوض");
+                   return;
+               }
+            }
+
             if(DATABASE[id]) {
                 document.getElementById('mName').innerText = DATABASE[id].n;
                 document.getElementById('mAge').innerText = "العمر: " + DATABASE[id].a + " عاماً";
