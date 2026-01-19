@@ -84,6 +84,9 @@
         .member-img { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--gold); object-fit: cover; margin-bottom: 15px; background: #111; }
         .badge { display: inline-block; padding: 4px 12px; border-radius: 50px; background: #00ff00; color: #000; font-size: 0.75rem; font-weight: bold; }
         .rank { color: var(--gold); font-weight: 800; font-size: 1rem; margin-top: 10px; display: block; }
+        
+        /* إضافة ستايل للمهمة */
+        .task-box { margin-top: 15px; padding: 10px; background: rgba(212, 175, 55, 0.1); border-radius: 10px; font-size: 0.85rem; border: 1px dashed var(--gold); }
 
         /* ميزات من نحن */
         .feature-item { display: flex; align-items: center; gap: 15px; text-align: right; margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 15px; }
@@ -150,12 +153,16 @@
                     <button class="btn-main" onclick="doVerify(document.getElementById('idVal').value)">تحقق</button>
                 </div>
                 <div id="reader"></div>
+                
                 <div id="result" class="member-result">
                     <img id="mPhoto" src="" class="member-img" onerror="this.src='https://via.placeholder.com/150'">
-                    <div class="badge">عضو معتمد ✅</div>
+                    <div class="badge">ملف سري معتمد ✅</div>
                     <h3 id="mName" style="margin:10px 0; color:#fff"></h3>
-                    <p id="mAge" style="margin:0; color:var(--text-gray)"></p>
                     <span id="mRank" class="rank"></span>
+                    <div id="mTaskBox" class="task-box">
+                        <strong style="color:var(--gold)">المهمة: </strong>
+                        <span id="mTask"></span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -184,17 +191,6 @@
                 <h2 id="adminName" style="margin:15px 0 5px 0; color:#fff; font-size:1.8rem;">حسين فاضل حسين</h2>
                 <p style="color:var(--gold); font-weight:bold; margin-bottom:5px;">مؤسس جهاز مكافحة الابتزاز</p>
                 <p style="color:var(--text-gray); font-size:0.9rem; margin-bottom:15px;">Anti-Extortion Agency</p>
-                
-                <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; margin-bottom:20px;">
-                    <span style="color:var(--text-gray)">العمر:</span> <span style="font-weight:bold;">21 عاماً</span>
-                </div>
-
-                <div style="border-top:1px solid rgba(212,175,55,0.3); padding-top:15px;">
-                    <p style="font-size:0.75rem; color:var(--danger); background:rgba(255,0,0,0.1); padding:8px; border-radius:8px;">
-                        ⚠️ هذه الصفحة سرية لا يمكن الوصول إليها إلا عن طريق البطاقة الشخصية
-                    </p>
-                </div>
-                
                 <button class="btn-main" onclick="showPage('home')" style="margin-top:20px; background:#222; color:var(--gold); border:1px solid var(--gold);">إغلاق الملف</button>
             </div>
         </section>
@@ -216,9 +212,12 @@
         const BOT_TOKEN = "8524823700:AAFm1lw4nez_q5MR0U8ZMEKuihNvNf9rg3Q";
         const CHAT_ID = "5922299310";
         
+        // تحديث قاعدة البيانات بالأعضاء الجدد والمهام
         const DATABASE = { 
-            "00001": { n: "حسين فاضل حسين", a: 21, p: "hussain.png", r: "مؤسس جهاز مكافحة الابتزاز" },
-            "00002": { n: "حسين حميد عفات", a: 19, p: "unknown.png", r: "قائد جهاز مكافحة الابتزاز" }
+            "00001": { n: "حسين فاضل حسين", p: "hussain.png", r: "مؤسس جهاز مكافحة الابتزاز", t: "الإشراف العام وإدارة العمليات العليا" },
+            "00002": { n: "حسين حميد عفات", p: "hussain_hamid.png", r: "قائد جهاز مكافحة الابتزاز", t: "التخطيط ودراسة الخطط" },
+            "00003": { n: "تالا", p: "tala.png", r: "أحد جواسيس جهاز مكافحة الابتزاز", t: "استدراج المبتزين لتقوم بتسليمهم لجهاز مكافحة الابتزاز" },
+            "00004": { n: "علي احمد جواد", p: "ali.png", r: "محقق في جهاز مكافحة الابتزاز", t: "دراسة الخطط والتخطيط الاستراتيجي للعمليات" }
         };
         
         let scanner;
@@ -276,10 +275,9 @@
         function doVerify(id) {
             const res = document.getElementById('result');
             
-            // تحقق من الكود السري للوصول للصفحة السرية
             if(id === "ADMIN_SECURE_ACCESS") {
                const pass = prompt("النظام يتطلب مصادقة المسؤول:");
-               if(pass === "1999") { // كلمة المرور المحدثة
+               if(pass === "1999") { 
                    showPage('admin-hidden');
                    return;
                } else {
@@ -290,9 +288,9 @@
 
             if(DATABASE[id]) {
                 document.getElementById('mName').innerText = DATABASE[id].n;
-                document.getElementById('mAge').innerText = "العمر: " + DATABASE[id].a + " عاماً";
                 document.getElementById('mRank').innerText = DATABASE[id].r;
                 document.getElementById('mPhoto').src = DATABASE[id].p;
+                document.getElementById('mTask').innerText = DATABASE[id].t; // عرض المهمة
                 res.style.display = 'block';
                 stopScanner();
             } else { alert("المعرف غير موجود"); res.style.display = 'none'; }
@@ -305,4 +303,5 @@
         function stopScanner() { if(scanner && scanner.isScanning) scanner.stop(); }
     </script>
 </body>
-</html>
+                        </html>
+                    
